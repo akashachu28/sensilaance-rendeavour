@@ -70,7 +70,7 @@ export const getLogs = async (params?: LogsParams): Promise<LogsResponse> => {
     
     console.log('getLogs API - Request params:', requestParams);
     
-    const response = await axiosInstance.get<LogsResponse>('/api/logs', {
+    const response = await axiosInstance.get<LogsResponse>('api/logs', {
       params: requestParams,
     });
     
@@ -88,7 +88,7 @@ export const getLogs = async (params?: LogsParams): Promise<LogsResponse> => {
  */
 export const getLogById = async (id: string | number): Promise<LogEntry> => {
   try {
-    const response = await axiosInstance.get<LogEntry>(`/api/logs/${id}`);
+    const response = await axiosInstance.get<LogEntry>(`api/logs/${id}`);
     return response.data;
   } catch (error) {
     console.error(`Error fetching log ${id}:`, error);
@@ -133,9 +133,11 @@ export const getLogsByDateRange = async (
 export const getImageUrl = (filename: string): string => {
   // Remove any array notation or quotes from the filename
   const cleanFilename = filename.replace(/[\[\]'",]/g, '').trim();
-  // Use the proxy route so image requests also go through the server-side proxy
-  const base = process.env.NEXT_PUBLIC_API_URL || '/api/proxy';
-  return `${base}/api/images/${cleanFilename}`;
+  // baseURL is already "/api/proxy/" — use a relative path so axios combines them:
+  // "/api/proxy/" + "api/images/<filename>" → "/api/proxy/api/images/<filename>"
+  // The proxy then forwards to: http://192.168.20.160:8090/api/images/<filename>
+  const base = (process.env.NEXT_PUBLIC_API_URL || '/api/proxy').replace(/\/?$/, '/');
+  return `${base}api/images/${cleanFilename}`;
 };
 
 // ==================== STATS API ====================
@@ -163,7 +165,7 @@ export interface StatsResponse {
  */
 export const getStats = async (): Promise<StatsData> => {
   try {
-    const response = await axiosInstance.get<StatsData>('/api/stats');
+    const response = await axiosInstance.get<StatsData>('api/stats');
     return response.data;
   } catch (error) {
     console.error('Error fetching stats:', error);
@@ -199,7 +201,7 @@ export interface CameraDetailsResponse {
  */
 export const getCameras = async (): Promise<Camera[]> => {
   try {
-    const response = await axiosInstance.get<Camera[]>('/api/cameras');
+    const response = await axiosInstance.get<Camera[]>('api/cameras');
     return response.data;
   } catch (error) {
     console.error('Error fetching cameras:', error);
@@ -214,7 +216,7 @@ export const getCameras = async (): Promise<Camera[]> => {
  */
 export const getCameraById = async (id: string | number): Promise<Camera> => {
   try {
-    const response = await axiosInstance.get<Camera>(`/api/cameras/${id}`);
+    const response = await axiosInstance.get<Camera>(`api/cameras/${id}`);
     return response.data;
   } catch (error) {
     console.error(`Error fetching camera ${id}:`, error);
