@@ -1,7 +1,5 @@
 "use client";
 import { useState, useEffect } from "react";
-import Link from "next/link";
-import Image from "next/image";
 import { Check, ChevronLeft, ChevronRight, Inbox, X, ZoomIn } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,11 +7,10 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Panel, PanelHeader } from "../Panel";
 import FilterSelect from "../Filterselect";
-import { getLogs, getImageUrl, type LogEntry } from "@/lib/api";
-import env from "@/lib/env";
+import { getLogs, type LogEntry } from "@/lib/api";
 
 const PER_PAGE_OPTIONS = [5, 10, 20, 50];
-const ALL = "All statuses", ALL_CAMERAS = "All Cameras";
+const ALL = "All statuses";
 
 // Status to gear_status mapping
 const STATUS_TO_GEAR_STATUS: Record<string, string> = {
@@ -158,7 +155,9 @@ export default function EventsTable({ zone, itemFilter, onItemFilter, camera, ra
   };
 
   const handleImageClick = (imageUrl: string) => {
-    setSelectedImage(`${env.apiUrl}${imageUrl}`);
+    // Route through proxy: /api/proxy/api/images/<filename>
+    const proxyBase = (process.env.NEXT_PUBLIC_API_URL || '/api/proxy').replace(/\/?$/, '/');
+    setSelectedImage(`${proxyBase}${imageUrl}`);
     setImageModalOpen(true);
   };
 
@@ -188,11 +187,11 @@ export default function EventsTable({ zone, itemFilter, onItemFilter, camera, ra
     }
   };
 
-  // Construct full image URL
+  // Construct full image URL through the proxy
   const getFullImageUrl = (filename: string | null): string | null => {
     if (!filename) return null;
-    // Ensure the URL is properly formatted
-    const url = `${env.apiUrl}api/images/${encodeURIComponent(filename)}`;
+    const proxyBase = (process.env.NEXT_PUBLIC_API_URL || '/api/proxy').replace(/\/?$/, '/');
+    const url = `${proxyBase}api/images/${encodeURIComponent(filename)}`;
     console.log('Full image URL:', url);
     return url;
   };
@@ -200,7 +199,7 @@ export default function EventsTable({ zone, itemFilter, onItemFilter, camera, ra
   return (
     <Panel id="events">
       <PanelHeader title="Recent PPE Detection Events" sub="Model observations. An alert is created only when an actionable rule is met."
-        right={<Link href="/events" className="shrink-0 text-xs font-medium text-[#12343B] hover:text-[#D3A966] transition-colors">Open full event log →</Link>} />
+        right={<span className="shrink-0 text-xs font-medium text-[#12343B]">Recent Events</span>} />
       <div className="flex flex-wrap items-center gap-2 border-b border-gray-100 p-4 bg-gray-50/50">
         <FilterSelect label="Status" value={st} onChange={(v) => { setSt(v); setPage(1); }} options={[ALL, "Fully compliant", "Partially compliant", "Non-compliant"]} />
         {filtered && <Button variant="ghost" size="sm" onClick={() => { setSt(ALL); }} className="hover:bg-white text-gray-600 hover:text-[#12343B]">Clear filters</Button>}

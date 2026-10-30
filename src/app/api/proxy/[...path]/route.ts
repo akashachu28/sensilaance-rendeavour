@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// Server-side only — never exposed to the browser
-const BACKEND_URL = process.env.BACKEND_URL || 'http://192.168.20.160:8090';
+// Server-side only — never exposed to the browser.
+// On Vercel, set BACKEND_URL in the project's Environment Variables dashboard.
+// Locally, it reads from .env.
+const BACKEND_URL = (process.env.BACKEND_URL || 'http://192.168.20.160:8090').replace(/\/$/, '');
 
 export async function GET(
   request: NextRequest,
@@ -31,6 +33,20 @@ export async function DELETE(
   return proxyRequest(request, await params);
 }
 
+/** Minimal empty responses per endpoint so the UI renders when the backend is unreachable */
+function getFallbackResponse(path: string): unknown {
+  if (path.startsWith('api/logs')) {
+    return { total: 0, page: 1, limit: 10, total_pages: 0, items: [] };
+  }
+  if (path.startsWith('api/stats')) {
+    return { total_logs: 0, total_workers: 0, full_gear: 0, half_gear: 0, no_ppe: 0, compliance_rate: 0, total_images: 0 };
+  }
+  if (path.startsWith('api/cameras')) {
+    return [];
+  }
+  return {};
+}
+
 async function proxyRequest(
   request: NextRequest,
   params: { path: string[] }
@@ -58,13 +74,14 @@ async function proxyRequest(
       method,
       headers: forwardHeaders,
       body,
+      // Short timeout so Vercel doesn't hang waiting for an unreachable LAN IP
+      signal: AbortSignal.timeout(8000),
     });
 
     const responseBody = await backendResponse.arrayBuffer();
 
     const responseHeaders = new Headers();
     backendResponse.headers.forEach((value, key) => {
-      // Don't forward encoding headers — Next.js handles this
       if (!['content-encoding', 'transfer-encoding'].includes(key.toLowerCase())) {
         responseHeaders.set(key, value);
       }
@@ -75,10 +92,8 @@ async function proxyRequest(
       headers: responseHeaders,
     });
   } catch (err) {
-    console.error('[Proxy Error]', targetUrl, err);
-    return NextResponse.json(
-      { error: 'Failed to reach backend', target: targetUrl },
-      { status: 502 }
-    );
+    // Backend unreachable (e.g. Vercel can't reach LAN IP, or timeout)
+    console.warn(`[Proxy] Backend unreachable at ${targetUrl} — returning fallback response`);
+    return NextResponse.json(getFallbackResponse(path), { status: 200 });
   }
 }
