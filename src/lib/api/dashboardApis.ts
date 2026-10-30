@@ -126,13 +126,16 @@ export const getLogsByDateRange = async (
 
 /**
  * Get image URL for evidence
+ * Routes through the Next.js proxy so it works in both dev and on Vercel.
  * @param filename - Image filename from API
  * @returns Full image URL
  */
 export const getImageUrl = (filename: string): string => {
   // Remove any array notation or quotes from the filename
   const cleanFilename = filename.replace(/[\[\]'",]/g, '').trim();
-  return `/api/images/${cleanFilename}`;
+  // Use the proxy route so image requests also go through the server-side proxy
+  const base = process.env.NEXT_PUBLIC_API_URL || '/api/proxy';
+  return `${base}/api/images/${cleanFilename}`;
 };
 
 // ==================== STATS API ====================

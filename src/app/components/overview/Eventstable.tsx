@@ -17,8 +17,8 @@ const ALL = "All statuses", ALL_CAMERAS = "All Cameras";
 
 // Status to gear_status mapping
 const STATUS_TO_GEAR_STATUS: Record<string, string> = {
-  "Fully compliant": "Full PPE",
-  "Partially compliant": "Half Gear",
+  "Fully compliant": "Full gear",
+  "Partially compliant": "Half gear",
   "Non-compliant": "No PPE",
 };
 
