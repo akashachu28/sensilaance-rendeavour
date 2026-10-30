@@ -35,7 +35,8 @@ export default function DateRangeFilter({
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
 
-  const handleValueChange = (newValue: string) => {
+  const handleValueChange = (newValue: string | null) => {
+    if (!newValue) return;
     onRangeChange(newValue);
     if (newValue === "custom") {
       setShowCustomDates(true);

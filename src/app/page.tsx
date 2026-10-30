@@ -114,11 +114,11 @@ export default function OverviewPage() {
         shift={shift} onShiftChange={setShift} />
 
       <main className="mx-auto max-w-[1600px] space-y-4 p-4 lg:p-6">
-        <Alert className="border-[#D3A966] bg-[#D3A966]/10 text-amber-900">
+        {/* <Alert className="border-[#D3A966] bg-[#D3A966]/10 text-amber-900">
           <WifiOff className="h-4 w-4" />
           <AlertTitle>Monitoring gap: Material Storage has 2 of 3 cameras offline</AlertTitle>
           <AlertDescription className="text-amber-800">Its status shows Unknown, not safe, until feeds are restored.</AlertDescription>
-        </Alert>
+        </Alert> */}
 
         <KpiGrid kpis={kpis} loading={loading} />
         {/* <div className="grid gap-4 md:grid-cols-2">

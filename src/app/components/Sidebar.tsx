@@ -2,7 +2,7 @@
 import { createContext, useContext, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { LayoutDashboard, MapPin, Video, BellRing, BarChart3, Settings, ShieldCheck, X } from "lucide-react";
+import { LayoutDashboard, X, ShieldCheck } from "lucide-react";
 
 /* Shared open/close state so the page header's menu button can toggle the sidebar on mobile */
 const SidebarCtx = createContext<{ open: boolean; toggle: () => void; close: () => void }>({
@@ -19,7 +19,7 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-const NAV = [
+const NAV: Array<{ label: string; href: string; icon: typeof LayoutDashboard; badge?: number }> = [
   { label: "Overview", href: "/", icon: LayoutDashboard },
   // { label: "Zones", href: "/zones", icon: MapPin },
   // { label: "Live Cameras", href: "/cameras", icon: Video },

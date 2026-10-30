@@ -45,13 +45,13 @@ export default function Header({ title, subtitle, range, onRangeChange, onCustom
           <h1 className="text-xl font-semibold leading-tight tracking-tight text-gray-900">{title}</h1>
           <p className="truncate text-xs text-gray-600">{subtitle}</p>
         </div>
-        <Badge variant="outline" className="hidden gap-1.5 border-gray-300 bg-white font-normal text-gray-700 md:inline-flex">
+        {/* <Badge variant="outline" className="hidden gap-1.5 border-gray-300 bg-white font-normal text-gray-700 md:inline-flex">
           <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-gray-500 opacity-60 motion-reduce:hidden" /><span className="relative inline-flex h-2 w-2 rounded-full bg-gray-600" /></span>
           Live · updated {lastUpdated}
-        </Badge>
-        <Button variant="ghost" size="icon" className="relative hover:bg-gray-100" aria-label="Notifications">
+        </Badge> */}
+        {/* <Button variant="ghost" size="icon" className="relative hover:bg-gray-100" aria-label="Notifications">
           <Bell className="h-5 w-5 text-gray-700" /><span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-gray-600 ring-2 ring-white" />
-        </Button>
+        </Button> */}
       </div>
       <div className="flex flex-wrap items-center gap-2 border-t border-gray-200 bg-white px-4 py-2 lg:px-6">
         {/* <FilterSelect label="Site" value="North Construction Site" onChange={() => {}} options={["North Construction Site", "South Yard"]} /> */}
@@ -60,7 +60,7 @@ export default function Header({ title, subtitle, range, onRangeChange, onCustom
           onRangeChange={onRangeChange}
           onCustomDateChange={onCustomDateChange}
         />
-        <FilterSelect label="Zone" value={zone} onChange={onZoneChange} options={["All zones", ...zoneOptions]} />
+        {/* <FilterSelect label="Zone" value={zone} onChange={onZoneChange} options={["All zones", ...zoneOptions]} /> */}
         <FilterSelect 
           label="Camera" 
           value={camera} 
@@ -68,7 +68,7 @@ export default function Header({ title, subtitle, range, onRangeChange, onCustom
           options={["All Cameras", ...cameras.map(cam => cam.camera_name)]} 
         />
         {/* <FilterSelect label="Shift" value={shift} onChange={onShiftChange} options={["All shifts", "Day (06:00-14:00)", "Evening (14:00-22:00)", "Night (22:00-06:00)"]} /> */}
-        <span className="ml-auto text-xs text-gray-600">Timezone: {timezone}</span>
+        {/* <span className="ml-auto text-xs text-gray-600">Timezone: {timezone}</span> */}
       </div>
     </header>
   );
