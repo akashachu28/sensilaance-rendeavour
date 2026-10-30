@@ -161,11 +161,17 @@ export interface StatsResponse {
 
 /**
  * Fetch dashboard statistics
+ * @param params - Optional date range filters
  * @returns Promise with stats response
  */
-export const getStats = async (): Promise<StatsData> => {
+export const getStats = async (params?: { start_date?: string; end_date?: string }): Promise<StatsData> => {
   try {
-    const response = await axiosInstance.get<StatsData>('api/stats');
+    const response = await axiosInstance.get<StatsData>('api/stats', {
+      params: {
+        ...(params?.start_date && { start_date: params.start_date }),
+        ...(params?.end_date && { end_date: params.end_date }),
+      },
+    });
     return response.data;
   } catch (error) {
     console.error('Error fetching stats:', error);

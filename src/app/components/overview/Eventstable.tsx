@@ -12,25 +12,30 @@ import { getLogs, type LogEntry } from "@/lib/api";
 const PER_PAGE_OPTIONS = [5, 10, 20, 50];
 const ALL = "All statuses";
 
-// Status to gear_status mapping
+// Status to gear_status mapping — values must match what the API expects
 const STATUS_TO_GEAR_STATUS: Record<string, string> = {
-  "Fully compliant": "Full gear",
+  "Compliant":           "Full gear",
   "Partially compliant": "Half gear",
-  "Non-compliant": "No PPE",
+  "Non-compliant":       "No PPE",
 };
 
-// Status style mapping
+// Status style mapping — keyed on exact API gear_status values
 const STATUS_STYLE: Record<string, string> = {
-  "Full PPE": "bg-green-50 text-green-700 border-green-200",
-  "Half Gear": "bg-amber-50 text-amber-700 border-amber-200",
-  "No PPE": "bg-red-50 text-red-700 border-red-200",
+  "Full gear": "bg-green-50 text-green-700 border-green-200",
+  "Half gear": "bg-amber-50 text-amber-700 border-amber-200",
+  "No PPE":    "bg-red-50 text-red-700 border-red-200",
+};
+
+// Label mapping
+const STATUS_LABEL: Record<string, string> = {
+  "Full gear": "Compliant",
+  "Half gear": "Partially compliant",
+  "No PPE":    "Non-compliant",
 };
 
 // Helper to determine compliance status
 const getComplianceStatus = (gearStatus: string): string => {
-  if (gearStatus === "Full PPE") return "Fully compliant";
-  if (gearStatus === "Half Gear") return "Partially compliant";
-  return "Non-compliant";
+  return STATUS_LABEL[gearStatus] ?? "Unknown";
 };
 
 // Helper to get items detected count
@@ -201,7 +206,7 @@ export default function EventsTable({ zone, itemFilter, onItemFilter, camera, ra
       <PanelHeader title="Recent PPE Detection Events" sub="Model observations. An alert is created only when an actionable rule is met."
         right={<span className="shrink-0 text-xs font-medium text-[#12343B]">Recent Events</span>} />
       <div className="flex flex-wrap items-center gap-2 border-b border-gray-100 p-4 bg-gray-50/50">
-        <FilterSelect label="Status" value={st} onChange={(v) => { setSt(v); setPage(1); }} options={[ALL, "Fully compliant", "Partially compliant", "Non-compliant"]} />
+        <FilterSelect label="Status" value={st} onChange={(v) => { setSt(v); setPage(1); }} options={[ALL, "Compliant", "Partially compliant", "Non-compliant"]} />
         {filtered && <Button variant="ghost" size="sm" onClick={() => { setSt(ALL); }} className="hover:bg-white text-gray-600 hover:text-[#12343B]">Clear filters</Button>}
       </div>
       

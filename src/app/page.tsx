@@ -28,10 +28,27 @@ export default function OverviewPage() {
   
   useEffect(() => { const t = setTimeout(() => setLoading(false), 600); return () => clearTimeout(t); }, []); // demo loading state
 
+  // Shared date-range computation (mirrors Eventstable logic)
+  const getDateRange = (r: string, from: string, to: string) => {
+    const today = new Date();
+    const toISO = (d: Date) => d.toISOString().split('T')[0];
+    if (r === "custom" && from && to) return { startDate: from, endDate: to };
+    if (r === "7d") {
+      const d = new Date(today); d.setDate(today.getDate() - 7);
+      return { startDate: toISO(d), endDate: toISO(today) };
+    }
+    if (r === "30d") {
+      const d = new Date(today); d.setDate(today.getDate() - 30);
+      return { startDate: toISO(d), endDate: toISO(today) };
+    }
+    return { startDate: toISO(today), endDate: toISO(today) };
+  };
+
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const statsData = await getStats();
+        const { startDate, endDate } = getDateRange(range, customDateFrom, customDateTo);
+        const statsData = await getStats({ start_date: startDate, end_date: endDate });
         setStats(statsData);
       } catch (error) {
         console.error('Failed to fetch stats:', error);
@@ -39,10 +56,10 @@ export default function OverviewPage() {
     };
 
     fetchStats();
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [range, customDateFrom, customDateTo]);
 
   const handleCustomDateChange = (from: string, to: string) => {
-    // Handle custom date range
     console.log('Custom date range selected:', { from, to });
     setCustomDateFrom(from);
     setCustomDateTo(to);

@@ -65,7 +65,9 @@ export default function Header({ title, subtitle, range, onRangeChange, onCustom
           label="Camera" 
           value={camera} 
           onChange={onCameraChange} 
-          options={["All Cameras", ...cameras.map(cam => cam.camera_name)]} 
+          options={["All Cameras", ...cameras.map(cam => cam.camera_name)]}
+          className="max-w-none w-auto"
+          contentClassName="w-auto min-w-56 max-w-none"
         />
         {/* <FilterSelect label="Shift" value={shift} onChange={onShiftChange} options={["All shifts", "Day (06:00-14:00)", "Evening (14:00-22:00)", "Night (22:00-06:00)"]} /> */}
         {/* <span className="ml-auto text-xs text-gray-600">Timezone: {timezone}</span> */}
