@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Tell Vercel this function has a max of 10s (default is also 10, but explicit is safer)
+export const maxDuration = 10;
+
 // Server-side only — never exposed to the browser.
-// On Vercel, set BACKEND_URL in the project's Environment Variables dashboard.
-// Locally, it reads from .env.
 const BACKEND_URL = (process.env.BACKEND_URL || 'http://192.168.20.160:8090').replace(/\/$/, '');
 
 export async function GET(
@@ -70,13 +71,21 @@ async function proxyRequest(
   }
 
   try {
-    const backendResponse = await fetch(targetUrl, {
-      method,
-      headers: forwardHeaders,
-      body,
-      // Short timeout so Vercel doesn't hang waiting for an unreachable LAN IP
-      signal: AbortSignal.timeout(8000),
-    });
+    // Use a manual AbortController with setTimeout for broader runtime compatibility
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 5000); // 5s max
+
+    let backendResponse: Response;
+    try {
+      backendResponse = await fetch(targetUrl, {
+        method,
+        headers: forwardHeaders,
+        body,
+        signal: controller.signal,
+      });
+    } finally {
+      clearTimeout(timer);
+    }
 
     const responseBody = await backendResponse.arrayBuffer();
 
@@ -92,8 +101,8 @@ async function proxyRequest(
       headers: responseHeaders,
     });
   } catch (err) {
-    // Backend unreachable (e.g. Vercel can't reach LAN IP, or timeout)
-    console.warn(`[Proxy] Backend unreachable at ${targetUrl} — returning fallback response`);
+    // Backend unreachable (LAN IP not reachable from Vercel, or timed out)
+    console.warn(`[Proxy] Backend unreachable at ${targetUrl} — returning fallback`);
     return NextResponse.json(getFallbackResponse(path), { status: 200 });
   }
 }
