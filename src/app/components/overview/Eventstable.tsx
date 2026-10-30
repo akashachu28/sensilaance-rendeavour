@@ -160,7 +160,7 @@ export default function EventsTable({ zone, itemFilter, onItemFilter, camera, ra
   };
 
   const handleImageClick = (imageUrl: string) => {
-    const base = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/?$/, '/');
+    const base = (process.env.NEXT_PUBLIC_API_URL || '/api/proxy').replace(/\/?$/, '/');
     setSelectedImage(`${base}${imageUrl}`);
     setImageModalOpen(true);
   };
@@ -193,7 +193,7 @@ export default function EventsTable({ zone, itemFilter, onItemFilter, camera, ra
 
   const getFullImageUrl = (filename: string | null): string | null => {
     if (!filename) return null;
-    const base = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/?$/, '/');
+    const base = (process.env.NEXT_PUBLIC_API_URL || '/api/proxy').replace(/\/?$/, '/');
     return `${base}api/images/${encodeURIComponent(filename)}`;
   };
 

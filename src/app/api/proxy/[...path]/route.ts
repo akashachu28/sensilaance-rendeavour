@@ -2,7 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export const maxDuration = 10;
 
-const BACKEND_URL = (process.env.BACKEND_URL || 'https://deal-believed-reforms-employ.trycloudflare.com').replace(/\/$/, '');
+const BACKEND_URL = (process.env.BACKEND_URL || '').replace(/\/$/, '');
+
+if (!BACKEND_URL) {
+  console.error('[Proxy] BACKEND_URL is not set — all requests will return fallback data');
+}
 
 /** Empty fallback responses so the UI renders when the backend is unreachable */
 function getFallbackResponse(path: string): unknown {
@@ -20,6 +24,11 @@ function getFallbackResponse(path: string): unknown {
 
 async function proxyRequest(request: NextRequest, params: { path: string[] }): Promise<NextResponse> {
   const path = params.path.join('/');
+
+  if (!BACKEND_URL) {
+    return NextResponse.json(getFallbackResponse(path), { status: 200 });
+  }
+
   const targetUrl = `${BACKEND_URL}/${path}${request.nextUrl.search}`;
 
   const forwardHeaders = new Headers();

@@ -132,7 +132,7 @@ export const getLogsByDateRange = async (
  */
 export const getImageUrl = (filename: string): string => {
   const cleanFilename = filename.replace(/[\[\]'",]/g, '').trim();
-  const base = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/?$/, '/');
+  const base = (process.env.NEXT_PUBLIC_API_URL || '/api/proxy').replace(/\/?$/, '/');
   return `${base}api/images/${cleanFilename}`;
 };
 
