@@ -160,9 +160,8 @@ export default function EventsTable({ zone, itemFilter, onItemFilter, camera, ra
   };
 
   const handleImageClick = (imageUrl: string) => {
-    // Route through proxy: /api/proxy/api/images/<filename>
-    const proxyBase = (process.env.NEXT_PUBLIC_API_URL || '/api/proxy').replace(/\/?$/, '/');
-    setSelectedImage(`${proxyBase}${imageUrl}`);
+    const base = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/?$/, '/');
+    setSelectedImage(`${base}${imageUrl}`);
     setImageModalOpen(true);
   };
 
@@ -192,13 +191,10 @@ export default function EventsTable({ zone, itemFilter, onItemFilter, camera, ra
     }
   };
 
-  // Construct full image URL through the proxy
   const getFullImageUrl = (filename: string | null): string | null => {
     if (!filename) return null;
-    const proxyBase = (process.env.NEXT_PUBLIC_API_URL || '/api/proxy').replace(/\/?$/, '/');
-    const url = `${proxyBase}api/images/${encodeURIComponent(filename)}`;
-    console.log('Full image URL:', url);
-    return url;
+    const base = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/?$/, '/');
+    return `${base}api/images/${encodeURIComponent(filename)}`;
   };
 
   return (

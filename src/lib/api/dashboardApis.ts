@@ -131,12 +131,8 @@ export const getLogsByDateRange = async (
  * @returns Full image URL
  */
 export const getImageUrl = (filename: string): string => {
-  // Remove any array notation or quotes from the filename
   const cleanFilename = filename.replace(/[\[\]'",]/g, '').trim();
-  // baseURL is already "/api/proxy/" — use a relative path so axios combines them:
-  // "/api/proxy/" + "api/images/<filename>" → "/api/proxy/api/images/<filename>"
-  // The proxy then forwards to: http://192.168.20.160:8090/api/images/<filename>
-  const base = (process.env.NEXT_PUBLIC_API_URL || '/api/proxy').replace(/\/?$/, '/');
+  const base = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/?$/, '/');
   return `${base}api/images/${cleanFilename}`;
 };
 
