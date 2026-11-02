@@ -59,10 +59,9 @@ export default function PpeItemCard({ onSelect, camera, range, customDateFrom, c
         setLoading(true);
         const { startDate, endDate } = getDateRange();
         
-        // Build params
+        // No limit set — let the API return its default page size for all records
         const params: Record<string, string | number> = {
           page: 1,
-          // limit: 1000, // Get all records for calculation
           start_date: startDate,
           end_date: endDate,
         };

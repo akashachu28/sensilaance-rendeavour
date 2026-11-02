@@ -102,6 +102,7 @@ export default function OverviewPage() {
       icon: ShieldAlert, 
       tone: "amber", 
       gauge: partialComplianceRate,
+      showTarget: false,
       sub: `${fmt(halfGear)} half-gear assessments from ${fmt(totalLogs)} total (${R.text})` 
     },
     { 
@@ -110,6 +111,7 @@ export default function OverviewPage() {
       icon: ShieldX, 
       tone: "red", 
       gauge: nonCompliantRate,
+      showTarget: false,
       sub: `${fmt(noPPE)} no-PPE assessments from ${fmt(totalLogs)} total (${R.text})` 
     },
     { 

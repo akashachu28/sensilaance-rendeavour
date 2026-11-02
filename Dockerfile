@@ -12,12 +12,11 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# NEXT_PUBLIC_API_URL is baked into the client bundle at build time.
-# Pass it as a build arg so the image is configurable without rebuilding.
-ARG NEXT_PUBLIC_API_URL=http://192.168.20.160:8090/
-ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
-
+# Build with the placeholder so the entrypoint can swap it at runtime.
+# Do NOT use the real URL here — it gets replaced when the container starts.
+ENV NEXT_PUBLIC_API_URL=__NEXT_PUBLIC_API_URL_PLACEHOLDER__
 ENV NEXT_TELEMETRY_DISABLED=1
+
 RUN npm run build
 
 # ---- runner stage ----
@@ -27,14 +26,21 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Non-root user for security
+# Default API URL — overridable at runtime via -e NEXT_PUBLIC_API_URL=...
+ENV NEXT_PUBLIC_API_URL=https://deal-believed-reforms-employ.trycloudflare.com
+
 RUN addgroup --system --gid 1001 nodejs \
  && adduser  --system --uid 1001 nextjs
 
-# Copy the standalone output
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static    ./.next/static
-COPY --from=builder --chown=nextjs:nodejs /app/public          ./public
+# Copy standalone build output
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static     ./.next/static
+COPY --from=builder /app/public           ./public
+
+# Copy entrypoint — must be owned by root to run sed, then drops to nextjs
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh \
+ && chown -R nextjs:nodejs /app
 
 USER nextjs
 
@@ -42,4 +48,4 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 
-CMD ["node", "server.js"]
+ENTRYPOINT ["docker-entrypoint.sh"]

@@ -3,14 +3,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      args:
-        # Override at build time: docker compose build --build-arg NEXT_PUBLIC_API_URL=http://your-backend/
-        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://192.168.20.160:8090/}
     image: kenya-ppe:latest
     container_name: kenya-ppe-app
     restart: unless-stopped
     environment:
       NODE_ENV: production
+      # Override at runtime: set NEXT_PUBLIC_API_URL in your shell or .env file
+      # Default is the Cloudflare tunnel URL baked into the image
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://deal-believed-reforms-employ.trycloudflare.com}
     expose:
       - "3000"
     networks:

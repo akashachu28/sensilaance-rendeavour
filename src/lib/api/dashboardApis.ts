@@ -61,7 +61,7 @@ export const getLogs = async (params?: LogsParams): Promise<LogsResponse> => {
   try {
     const requestParams = {
       page: params?.page || 1,
-      limit: params?.limit || 10,
+      ...(params?.limit !== undefined && { limit: params.limit }),
       ...(params?.camera_id !== undefined && params?.camera_id !== null && { camera_id: params.camera_id }),
       ...(params?.start_date && { start_date: params.start_date }),
       ...(params?.end_date && { end_date: params.end_date }),
