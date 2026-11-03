@@ -1,50 +1,47 @@
 # ---- deps stage ----
 FROM node:20-alpine AS deps
 WORKDIR /app
-
 COPY package.json package-lock.json ./
 RUN npm ci
 
 # ---- builder stage ----
 FROM node:20-alpine AS builder
 WORKDIR /app
-
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-
-# Build with the placeholder so the entrypoint can swap it at runtime.
-# Do NOT use the real URL here — it gets replaced when the container starts.
 ENV NEXT_PUBLIC_API_URL=__NEXT_PUBLIC_API_URL_PLACEHOLDER__
 ENV NEXT_TELEMETRY_DISABLED=1
-
 RUN npm run build
 
-# ---- runner stage ----
+# ---- runner stage (Next.js + nginx in one container) ----
 FROM node:20-alpine AS runner
 WORKDIR /app
+
+# Install nginx
+RUN apk add --no-cache nginx
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Default API URL — overridable at runtime via -e NEXT_PUBLIC_API_URL=...
+# Default API URL — override with -e NEXT_PUBLIC_API_URL=... at docker run
 ENV NEXT_PUBLIC_API_URL=https://deal-believed-reforms-employ.trycloudflare.com
 
-RUN addgroup --system --gid 1001 nodejs \
- && adduser  --system --uid 1001 nextjs
-
-# Copy standalone build output
+# Copy Next.js standalone build
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static     ./.next/static
 COPY --from=builder /app/public           ./public
 
-# Copy entrypoint — must be owned by root to run sed, then drops to nextjs
+# Copy nginx config
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Copy entrypoint
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh \
- && chown -R nextjs:nodejs /app
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-USER nextjs
+# nginx needs these dirs
+RUN mkdir -p /var/log/nginx /var/lib/nginx/tmp /run/nginx
 
-EXPOSE 3000
+EXPOSE 80
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 
