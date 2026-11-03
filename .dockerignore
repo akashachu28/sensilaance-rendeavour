@@ -1,0 +1,33 @@
+# Dependencies
+**/node_modules
+
+# Build output
+**/dist
+**/dist-test
+**/build
+**/.next
+**/out
+**/.vite
+
+# Env files (runtime config is injected at container start, not baked in)
+**/.env
+**/.env.local
+**/.env.*.local
+
+# Git
+.git
+**/.gitignore
+**/.gitattributes
+
+# IDE
+**/.vscode
+**/.idea
+
+# Docs
+**/*.md
+
+# Misc
+**/*.log
+**/.DS_Store
+**/Thumbs.db
+**/*.tsbuildinfo

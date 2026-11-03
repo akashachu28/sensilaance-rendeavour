@@ -14,5 +14,9 @@ sed -i "s|__NEXT_PUBLIC_API_URL_PLACEHOLDER__|$RUNTIME_URL|g" /app/server.js 2>/
 # Start Next.js in the background on port 3000
 node /app/server.js &
 
+# Wait for Next.js to be ready before starting nginx
+echo "[entrypoint] Waiting for Next.js to start..."
+sleep 3
+
 # Start nginx in the foreground (keeps the container alive)
 exec nginx -g "daemon off;"
