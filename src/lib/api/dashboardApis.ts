@@ -258,3 +258,44 @@ export const getCamerasByZone = async (zone: string): Promise<Camera[]> => {
     throw error;
   }
 };
+
+// ==================== STATS DETECTIONS API ====================
+
+export interface DetectionsData {
+  helmet_detected: number;
+  reflector_detected: number;
+  boot_detected: number;
+  total_detections: number;
+  vest_detected: number;
+  total_logs_evaluated: number;
+  breakdown: {
+    helmet: number;
+    reflector: number;
+    boot: number;
+  };
+}
+
+/**
+ * Fetch PPE item detection breakdown
+ * @param params - Optional date range and camera filters
+ * @returns Promise with detection breakdown
+ */
+export const getStatsDetections = async (params?: {
+  start_date?: string;
+  end_date?: string;
+  camera_id?: number;
+}): Promise<DetectionsData> => {
+  try {
+    const response = await axiosInstance.get<DetectionsData>('api/stats/detections', {
+      params: {
+        ...(params?.start_date  && { start_date:  params.start_date  }),
+        ...(params?.end_date    && { end_date:    params.end_date    }),
+        ...(params?.camera_id !== undefined && { camera_id: params.camera_id }),
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching stats/detections:', error);
+    throw error;
+  }
+};

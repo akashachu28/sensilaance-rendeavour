@@ -71,7 +71,7 @@ export default function DateRangeFilter({
           <SelectValue placeholder="Select Range">
             {getDisplayValue()}
           </SelectValue>
-          <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
+          {/* <ChevronDown className="ml-2 h-4 w-4 opacity-50" /> */}
         </SelectTrigger>
         <SelectContent className="bg-white border-gray-300">
           {DATE_OPTIONS.map((option) => (
