@@ -84,7 +84,7 @@ export default function OverviewPage() {
       tone: hasData ? "amber" : "neutral",
       gauge: hasData ? partialComplianceRate : undefined,
       showTarget: false,
-      sub: hasData ? `${fmt(halfGear)} half-gear assessments from ${fmt(totalLogs)} total (${R.text})` : noDataSub,
+      sub: hasData ? `${fmt(halfGear)} half-gear assessments from ${fmt(totalLogs)} total` : noDataSub,
     },
     {
       label: "Non-Compliant Rate",
@@ -93,14 +93,14 @@ export default function OverviewPage() {
       tone: hasData ? "red" : "neutral",
       gauge: hasData ? nonCompliantRate : undefined,
       showTarget: false,
-      sub: hasData ? `${fmt(noPPE)} no-PPE assessments from ${fmt(totalLogs)} total (${R.text})` : noDataSub,
+      sub: hasData ? `${fmt(noPPE)} no-PPE assessments from ${fmt(totalLogs)} total` : noDataSub,
     },
     {
       label: "Person Assessments",
       value: hasData ? fmt(totalLogs) : "—",
       icon: Users,
       tone: "neutral",
-      sub: hasData ? `Valid assessments, ${R.text}. Not unique workers.` : noDataSub,
+      sub: hasData ? `Valid assessments. Not unique workers.` : noDataSub,
     },
   ];
 
